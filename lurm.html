@@ -20,18 +20,6 @@
 		font-weight: bold;
 	}
 	</style>
-</head>
-<body>
-	<div>Greg's (Limited) Unlimited Register Machine</div>
-
-	<textarea id="program" rows=25 cols=50>
-S(1)
-S(2)
-S(3)</textarea>
-
-	<div>
-		<button id="run" onclick="run(document.getElementById('program').value);">Run!</button>
-	</div>
 
 	<script>
 var jmp="J";
@@ -41,7 +29,7 @@ var mov="T";	// transfer
 
 var registers=[];
 
-var run = function(instructions) {
+function run(instructions) {
 	var instructionCompleted = 0;
 
 	// run instructions
@@ -55,7 +43,7 @@ var run = function(instructions) {
 
 		switch(line[0]) {
 			case jmp:
-					=jump(line);
+					//=jump(line);
 				if(next !== undefined)
 					i=next - 1; // offset for loop counter; there's a better way to do this
 				break;
@@ -88,36 +76,36 @@ var run = function(instructions) {
 	alert("Answer: " + registers[1]);
 };
 
-var jump = function(line) {
+function jump(line) {
 	if(getReg(line[2]) === getReg(line[4]))
 		return line[6] - 1;	// URM uses 0 as a basis for instructions
 };
 
-var inc = function(line) {
+function inc(line) {
 	var reg=line[2];
 
 	setReg(reg, getReg(reg)+1);
 };
 
-var zero = function(line) {
+function zero(line) {
 	setReg(line[2], 0);
 };
 
-var move = function(line) {
+function move(line) {
 	setReg(line[4], getReg(line[2]));
 };
 
-var getReg = function(num) {
+function getReg(num) {
 	if(registers[num] === undefined)
 		return 0;
 	else return registers[num];
 };
 
-var setReg = function (num, value) {
+function setReg(num, value) {
 	registers[num] = value;
 };
 
-var outputTable = function() {
+function outputTable() {
 
 	var div = document.createElement('div');
 	var t = document.createElement("table");
@@ -146,7 +134,7 @@ var outputTable = function() {
 		{
 			cell = row.insertCell(i-1);
 			cell.innerHTML = getReg(i);
-		}	
+		}
 	}
 
 	div.appendChild(t);
@@ -155,5 +143,17 @@ var outputTable = function() {
 }
 
 	</script>
+</head>
+<body>
+	<div>Greg's (Limited) Unlimited Register Machine</div>
+
+	<textarea id="program" rows=25 cols=50>
+S(1)
+S(2)
+S(3)</textarea>
+
+	<div>
+		<button id="run" onclick="run(document.getElementById('program').value);">Run!</button>
+	</div>
 </body>
 </html>
