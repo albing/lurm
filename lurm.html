@@ -1,0 +1,159 @@
+<html>
+<head>
+	<title>Greg's (Limited) Unlimited Register Machine</title>
+	<style>
+	body {
+		background-color: #C9DFF0;
+		text-align:center;
+	}
+	div {
+		margin:22;
+	}
+	table {
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.regval {
+		font-style: italic;
+	}
+	.regnum {
+		font-weight: bold;
+	}
+	</style>
+</head>
+<body>
+	<div>Greg's (Limited) Unlimited Register Machine</div>
+
+	<textarea id="program" rows=25 cols=50>
+S(1)
+S(2)
+S(3)</textarea>
+
+	<div>
+		<button id="run" onclick="run(document.getElementById('program').value);">Run!</button>
+	</div>
+
+	<script>
+var jmp="J";
+var increment="S"; // successor
+var zzero="Z";
+var mov="T";	// transfer
+
+var registers=[];
+
+var run = function(instructions) {
+	var instructionCompleted = 0;
+
+	// run instructions
+	var lines=instructions.split("\n");
+
+	for(var i=0; i<lines.length; i++)
+	{
+		var line=lines[i].trim();
+		var instruction="";
+		var next;
+
+		switch(line[0]) {
+			case jmp:
+					=jump(line);
+				if(next !== undefined)
+					i=next - 1; // offset for loop counter; there's a better way to do this
+				break;
+			case increment:
+				inc(line);
+				break;
+			case zzero:
+				zero(line);
+				break;
+			case mov:
+				move(line);
+				break;
+			case undefined: continue;
+			default:
+				alert("unknown instruction: " + line);
+				continue;
+		}
+
+		instructionCompleted++;
+		if(instructionCompleted < 50)
+			outputTable();
+		else
+		{
+			alert("Failed to complete after 50 steps");
+			break;
+		}
+	}
+	document.body.appendChild(document.createElement("hr"));
+
+	alert("Answer: " + registers[1]);
+};
+
+var jump = function(line) {
+	if(getReg(line[2]) === getReg(line[4]))
+		return line[6] - 1;	// URM uses 0 as a basis for instructions
+};
+
+var inc = function(line) {
+	var reg=line[2];
+
+	setReg(reg, getReg(reg)+1);
+};
+
+var zero = function(line) {
+	setReg(line[2], 0);
+};
+
+var move = function(line) {
+	setReg(line[4], getReg(line[2]));
+};
+
+var getReg = function(num) {
+	if(registers[num] === undefined)
+		return 0;
+	else return registers[num];
+};
+
+var setReg = function (num, value) {
+	registers[num] = value;
+};
+
+var outputTable = function() {
+
+	var div = document.createElement('div');
+	var t = document.createElement("table");
+		var a = document.createAttribute("border");
+		a.value="2";
+		t.setAttributeNode(a);
+		a = document.createAttribute("cellpadding");
+		a.value="10";
+		t.setAttributeNode(a);
+	var row = t.insertRow(0);
+	row.setAttribute("class", "regnum");
+	var cell;
+
+	if(registers.length < 1) {
+		cell = row.insertCell(0);
+		cell.innerHTML = "Empty";
+	} else {
+		for(var i=1; i<registers.length; i++)
+		{
+			cell = row.insertCell(i-1);
+			cell.innerHTML = i;
+		}
+		row = t.insertRow(1);
+		row.setAttribute("class", "regval");
+		for(var i=1; i<registers.length; i++)
+		{
+			cell = row.insertCell(i-1);
+			cell.innerHTML = getReg(i);
+		}	
+	}
+
+	div.appendChild(t);
+	document.body.appendChild(div);
+
+}
+
+	</script>
+</body>
+</html>
